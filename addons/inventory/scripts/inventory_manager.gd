@@ -11,6 +11,7 @@ extends Node
 @export_group("Settings")
 @export var allow_item_divison = true
 @export var allow_item_drop = true
+@export var auto_item_loot = true
 @export var open_inventory_input = "ui_accept"
 @export var drop_item_input = "ui_focus_next"
 @export var use_item_input = "ui_text_delete"
@@ -72,7 +73,13 @@ func _process(_delta: float) -> void:
 			leave_entered_area()
 		
 	if Input.is_action_just_pressed(drop_item_input) and allow_item_drop:
-		drop_item(get_parent().position + Vector2(0, 70))
+		if auto_item_loot:
+			auto_item_loot = false
+			drop_item(get_parent().position + Vector2(0, 0))
+			await get_tree().create_timer(0.3).timeout
+			auto_item_loot = true
+		else :
+			drop_item(get_parent().position + Vector2(0, 0))
 		
 	if Input.is_action_just_pressed(use_item_input):
 		storage_manager.use_item(1)
