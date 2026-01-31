@@ -36,16 +36,19 @@ func start_floating_animation():
 
 func _on_item_area_area_entered(area):
 	if area.name == "inventory_area_controller":
-		if tween:
-			tween.kill() 
+		
+		
+		if area.get_parent().get_node("inventory_manager").auto_item_loot:
+			if tween:
+				tween.kill() 
+				
+			tween = create_tween()
+			tween.set_parallel(true)
+			tween.tween_property(texture_node, "global_position", get_parent().get_node("player").global_position, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+			tween.tween_property(texture_node, "modulate:a", 0.0, 0.3)
+			await tween.finished
 			
-		tween = create_tween()
-		tween.set_parallel(true)
-
-		tween.tween_property(texture_node, "global_position", get_parent().get_node("player").global_position, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		tween.tween_property(texture_node, "modulate:a", 0.0, 0.3)
-
-		await tween.finished
-
-		if area.get_parent().get_node("inventory_manager").storage_manager.collect_item(item):
-			queue_free()
+			if area.get_parent().get_node("inventory_manager").storage_manager.collect_item(item):
+				queue_free()
+		else:
+			print("auto loot off, set the logic input to loot here")
